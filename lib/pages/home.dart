@@ -36,16 +36,24 @@ class _TranslatorPageState extends State<TranslatorPage> {
   TextEditingController inputTextController = TextEditingController();
   TextEditingController outputTextController = TextEditingController();
   bool error = false;
+  late String from;
+  late String to;
 
   late final AudioPlayer audioPlayerInput;
   late final AudioPlayer audioPlayerOutput;
 
   bool swaping = false;
 
-  void _translateText(text) {
+  void _translateText(String text) {
     _debounce?.cancel();
+    if (text == '') {
+      _debounce = Timer(const Duration(milliseconds: 500), () {
+        outputTextController.text = '';
+      });
+      return;
+    }
     _debounce = Timer(const Duration(milliseconds: 500), () async {
-      final String link = _getLink('english', 'french', text);
+      final String link = _getLink(text);
       final url = Uri.parse(link);
       final req = await http.get(url);
       if (req.statusCode == 200) {
@@ -69,8 +77,7 @@ class _TranslatorPageState extends State<TranslatorPage> {
     });
   }
 
-  String _getLink(String from, String to, String text,
-      {String engine = 'libre'}) {
+  String _getLink(String text, {String engine = 'libre'}) {
     return Uri.https(api, 'api/translate',
         {'from': from, 'to': to, 'engine': engine, 'text': text}).toString();
     // return '$apiLink/translate?from=$from&to=$to&text=$text&engine=$engine';
@@ -86,6 +93,8 @@ class _TranslatorPageState extends State<TranslatorPage> {
   void initState() {
     audioPlayerInput = AudioPlayer();
     audioPlayerOutput = AudioPlayer();
+    from = 'English';
+    to = 'French';
     super.initState();
   }
 
@@ -109,6 +118,45 @@ class _TranslatorPageState extends State<TranslatorPage> {
           padding: const EdgeInsets.all(padding / 2),
           child: Column(
             children: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  TextButton(
+                    child: Text(from),
+                    onPressed: () {},
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      if (swaping) return;
+                      setState(() {
+                        swaping = true;
+                      });
+
+                      String temp = inputTextController.text;
+                      inputTextController.text = outputTextController.text;
+                      outputTextController.text = temp;
+
+                      temp = from;
+                      from = to;
+                      to = temp;
+
+                      setState(() {
+                        _translateText(inputTextController.text);
+                        swaping = false;
+                      });
+                    },
+                    icon: const Icon(Icons.swap_horiz_rounded),
+                  ),
+                  TextButton(
+                    child: Text(to),
+                    onPressed: () {},
+                  ),
+                ],
+              ),
+              const Divider(
+                thickness: 2,
+                color: Colors.black,
+              ),
               Flexible(
                 flex: 1,
                 child: Padding(
