@@ -53,6 +53,9 @@ class _TranslatorPageState extends State<TranslatorPage> {
         await audioPlayerInput.setUrl(
           _getTtsLink('english', inputTextController.text).toString(),
         );
+        await audioPlayerOutput.setUrl(
+          _getTtsLink('french', outputTextController.text).toString(),
+        );
         setState(() {
           error = false;
         });
@@ -211,7 +214,10 @@ class _TranslatorPageState extends State<TranslatorPage> {
                               icon: const Icon(Icons.copy),
                             ),
                             IconButton(
-                              onPressed: () {},
+                              onPressed: () async {
+                                await audioPlayerOutput.play();
+                                audioPlayerOutput.stop();
+                              },
                               icon: const Icon(Icons.volume_up),
                             ),
                           ],
