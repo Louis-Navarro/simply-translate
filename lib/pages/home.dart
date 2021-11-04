@@ -162,9 +162,7 @@ class _TranslatorPageState extends State<TranslatorPage> {
   void _translateText(String text) {
     _debounce?.cancel();
     if (text == '') {
-      _debounce = Timer(const Duration(milliseconds: 500), () {
-        outputTextController.text = '';
-      });
+      outputTextController.text = '';
       return;
     }
     _debounce = Timer(const Duration(milliseconds: 500), () async {
@@ -173,6 +171,10 @@ class _TranslatorPageState extends State<TranslatorPage> {
       final req = await http.get(url);
       if (req.statusCode == 200) {
         outputTextController.text = req.body;
+        if (req.body == "") {
+          setState(() => error = true);
+          return;
+        }
         audioPlayerInput.setUrl(
           _getTtsLink(from, inputTextController.text).toString(),
         );
