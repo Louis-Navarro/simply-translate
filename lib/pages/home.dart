@@ -16,9 +16,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:just_audio/just_audio.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:ionicons/ionicons.dart';
 
 import '../widgets/list_view_search.dart';
 import '../widgets/text_field_box.dart';
@@ -291,7 +292,7 @@ class _TranslatorPageState extends State<TranslatorPage> {
                   ),
                   IconButton(
                     onPressed: () => _swapLanguages(),
-                    icon: const Icon(Icons.swap_horiz_rounded),
+                    icon: const FaIcon(FontAwesomeIcons.exchangeAlt, size: 16),
                   ),
                   TextButton(
                     child: Text(to),

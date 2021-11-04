@@ -17,6 +17,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:just_audio/just_audio.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:ionicons/ionicons.dart';
 
 class TextFieldBox extends StatefulWidget {
   final TextEditingController textController;
@@ -90,7 +92,7 @@ class _TextFieldBoxState extends State<TextFieldBox> {
                   heightFactor: 10.0,
                   child: enabled
                       ? IconButton(
-                          icon: const Icon(Icons.close),
+                          icon: const Icon(Ionicons.close, size: 28),
                           onPressed: () {
                             textController.clear();
                             translateText(textController.text);
@@ -120,14 +122,14 @@ class _TextFieldBoxState extends State<TextFieldBox> {
                     ));
                   });
                 },
-                icon: const Icon(Icons.copy),
+                icon: const Icon(Ionicons.copy_outline),
               ),
               IconButton(
                 onPressed: () async {
                   await audioPlayer.play();
                   audioPlayer.stop();
                 },
-                icon: const Icon(Icons.volume_up),
+                icon: const Icon(Ionicons.volume_high),
               ),
             ],
           ),
