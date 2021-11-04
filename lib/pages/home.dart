@@ -21,6 +21,7 @@ import 'package:http/http.dart' as http;
 import 'package:just_audio/just_audio.dart';
 
 import '../widgets/list_view_search.dart';
+import '../widgets/text_field_box.dart';
 
 const languages = <String>[
   'Afrikaans',
@@ -336,58 +337,12 @@ class _TranslatorPageState extends State<TranslatorPage> {
                 flex: 1,
                 child: Padding(
                   padding: const EdgeInsets.all(padding),
-                  child: Column(
-                    children: <Widget>[
-                      Flexible(
-                        flex: 4,
-                        child: SizedBox(
-                          child: TextField(
-                            maxLines: null,
-                            controller: inputTextController,
-                            expands: true,
-                            onChanged: (value) {
-                              // print(value);
-                              _translateText(value);
-                            },
-                            decoration: const InputDecoration(
-                              hintText: 'Text to translate',
-                            ),
-                          ),
-                        ),
-                      ),
-                      Flexible(
-                        flex: 1,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: <Widget>[
-                            IconButton(
-                              onPressed: () {
-                                Clipboard.setData(
-                                  ClipboardData(
-                                    text: inputTextController.text,
-                                  ),
-                                ).then((_) {
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(const SnackBar(
-                                    content: Text(
-                                        'Copied initial text to clipboard'),
-                                    duration: Duration(milliseconds: 500),
-                                  ));
-                                });
-                              },
-                              icon: const Icon(Icons.copy),
-                            ),
-                            IconButton(
-                              onPressed: () async {
-                                await audioPlayerInput.play();
-                                audioPlayerInput.stop();
-                              },
-                              icon: const Icon(Icons.volume_up),
-                            ),
-                          ],
-                        ),
-                      )
-                    ],
+                  child: TextFieldBox(
+                    audioPlayer: audioPlayerInput,
+                    textController: inputTextController,
+                    translateText: _translateText,
+                    hintText: 'Text to translate',
+                    snackBarMessage: 'Copied inital text to clipboard',
                   ),
                 ),
               ),
@@ -399,54 +354,11 @@ class _TranslatorPageState extends State<TranslatorPage> {
                 flex: 1,
                 child: Padding(
                   padding: const EdgeInsets.all(padding),
-                  child: Column(
-                    children: <Widget>[
-                      Flexible(
-                        flex: 4,
-                        child: TextField(
-                          controller: outputTextController,
-                          maxLines: null,
-                          expands: true,
-                          style: TextStyle(
-                              color: error ? Colors.red : Colors.white),
-                          decoration: const InputDecoration(
-                            hintText: 'Translated Text',
-                          ),
-                        ),
-                      ),
-                      Flexible(
-                        flex: 1,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: <Widget>[
-                            IconButton(
-                              onPressed: () {
-                                Clipboard.setData(
-                                  ClipboardData(
-                                    text: outputTextController.text,
-                                  ),
-                                ).then((_) {
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(const SnackBar(
-                                    content:
-                                        Text('Copied translation to clipboard'),
-                                    duration: Duration(milliseconds: 500),
-                                  ));
-                                });
-                              },
-                              icon: const Icon(Icons.copy),
-                            ),
-                            IconButton(
-                              onPressed: () async {
-                                await audioPlayerOutput.play();
-                                audioPlayerOutput.stop();
-                              },
-                              icon: const Icon(Icons.volume_up),
-                            ),
-                          ],
-                        ),
-                      )
-                    ],
+                  child: TextFieldBox(
+                    audioPlayer: audioPlayerOutput,
+                    textController: outputTextController,
+                    hintText: 'Translated text',
+                    snackBarMessage: 'Copied inital text to clipboard',
                   ),
                 ),
               ),
