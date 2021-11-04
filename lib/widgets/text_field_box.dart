@@ -84,6 +84,20 @@ class _TextFieldBoxState extends State<TextFieldBox> {
               },
               decoration: InputDecoration(
                 hintText: hintText,
+                suffixIcon: Align(
+                  alignment: Alignment.topRight,
+                  widthFactor: 1.0,
+                  heightFactor: 10.0,
+                  child: enabled
+                      ? IconButton(
+                          icon: const Icon(Icons.close),
+                          onPressed: () {
+                            textController.clear();
+                            translateText(textController.text);
+                          },
+                        )
+                      : const SizedBox(),
+                ),
               ),
             ),
           ),
