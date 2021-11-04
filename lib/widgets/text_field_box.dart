@@ -26,12 +26,14 @@ class TextFieldBox extends StatefulWidget {
   final String hintText;
   final String snackBarMessage;
 
+  final bool enabled;
+
   const TextFieldBox({
     required this.textController,
     required this.audioPlayer,
     this.translateText,
     Key? key,
-    bool enabled = true,
+    this.enabled = true,
     required this.hintText,
     required this.snackBarMessage,
   }) : super(key: key);
@@ -48,6 +50,8 @@ class _TextFieldBoxState extends State<TextFieldBox> {
   late final String hintText;
   late final String snackBarMessage;
 
+  late final bool enabled;
+
   @override
   void initState() {
     textController = widget.textController;
@@ -56,6 +60,8 @@ class _TextFieldBoxState extends State<TextFieldBox> {
 
     hintText = widget.hintText;
     snackBarMessage = widget.snackBarMessage;
+
+    enabled = widget.enabled;
 
     super.initState();
   }
@@ -69,6 +75,7 @@ class _TextFieldBoxState extends State<TextFieldBox> {
           child: SizedBox(
             child: TextField(
               maxLines: null,
+              enabled: enabled,
               controller: textController,
               expands: true,
               onChanged: (value) {

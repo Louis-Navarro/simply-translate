@@ -358,6 +358,7 @@ class _TranslatorPageState extends State<TranslatorPage> {
                     audioPlayer: audioPlayerOutput,
                     textController: outputTextController,
                     hintText: 'Translated text',
+                    enabled: false,
                     snackBarMessage: 'Copied inital text to clipboard',
                   ),
                 ),
