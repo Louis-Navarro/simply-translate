@@ -20,6 +20,119 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:just_audio/just_audio.dart';
 
+import '../widgets/list_view_search.dart';
+
+const languages = <String>[
+  'Afrikaans',
+  'Albanian',
+  'Amharic',
+  'Arabic',
+  'Armenian',
+  'Azerbaijani',
+  'Basque',
+  'Belarusian',
+  'Bengali',
+  'Bosnian',
+  'Bulgarian',
+  'Catalan',
+  'Cebuano',
+  'Chichewa',
+  'Chinese',
+  'Corsican',
+  'Croatian',
+  'Czech',
+  'Danish',
+  'Dutch',
+  'English',
+  'Esperanto',
+  'Estonian',
+  'Filipino',
+  'Finnish',
+  'French',
+  'Frisian',
+  'Galician',
+  'Georgian',
+  'German',
+  'Greek',
+  'Gujarati',
+  'Haitian Creole',
+  'Hausa',
+  'Hawaiian',
+  'Hebrew',
+  'Hindi',
+  'Hmong',
+  'Hungarian',
+  'Icelandic',
+  'Igbo',
+  'Indonesian',
+  'Irish',
+  'Italian',
+  'Japanese',
+  'Javanese',
+  'Kannada',
+  'Kazakh',
+  'Khmer',
+  'Kinyarwanda',
+  'Korean',
+  'Kurdish (Kurmanji)',
+  'Kyrgyz',
+  'Lao',
+  'Latin',
+  'Latvian',
+  'Lithuanian',
+  'Luxembourgish',
+  'Macedonian',
+  'Malagasy',
+  'Malay',
+  'Malayalam',
+  'Maltese',
+  'Maori',
+  'Marathi',
+  'Mongolian',
+  'Myanmar (Burmese)',
+  'Nepali',
+  'Norwegian',
+  'Odia (Oriya)',
+  'Pashto',
+  'Persian',
+  'Polish',
+  'Portuguese',
+  'Punjabi',
+  'Romanian',
+  'Russian',
+  'Samoan',
+  'Scots Gaelic',
+  'Serbian',
+  'Sesotho',
+  'Shona',
+  'Sindhi',
+  'Sinhala',
+  'Slovak',
+  'Slovenian',
+  'Somali',
+  'Spanish',
+  'Sundanese',
+  'Swahili',
+  'Swedish',
+  'Tajik',
+  'Tamil',
+  'Tatar',
+  'Telugu',
+  'Thai',
+  'Turkish',
+  'Turkmen',
+  'Ukrainian',
+  'Urdu',
+  'Uyghur',
+  'Uzbek',
+  'Vietnamese',
+  'Welsh',
+  'Xhosa',
+  'Yiddish',
+  'Yoruba',
+  'Zulu',
+];
+
 class TranslatorPage extends StatefulWidget {
   const TranslatorPage({Key? key}) : super(key: key);
 
@@ -58,11 +171,11 @@ class _TranslatorPageState extends State<TranslatorPage> {
       final req = await http.get(url);
       if (req.statusCode == 200) {
         outputTextController.text = req.body;
-        await audioPlayerInput.setUrl(
-          _getTtsLink('english', inputTextController.text).toString(),
+        audioPlayerInput.setUrl(
+          _getTtsLink(from, inputTextController.text).toString(),
         );
-        await audioPlayerOutput.setUrl(
-          _getTtsLink('french', outputTextController.text).toString(),
+        audioPlayerOutput.setUrl(
+          _getTtsLink(to, outputTextController.text).toString(),
         );
         setState(() {
           error = false;
@@ -77,7 +190,7 @@ class _TranslatorPageState extends State<TranslatorPage> {
     });
   }
 
-  String _getLink(String text, {String engine = 'libre'}) {
+  String _getLink(String text, {String engine = 'google'}) {
     return Uri.https(api, 'api/translate',
         {'from': from, 'to': to, 'engine': engine, 'text': text}).toString();
     // return '$apiLink/translate?from=$from&to=$to&text=$text&engine=$engine';
@@ -87,6 +200,26 @@ class _TranslatorPageState extends State<TranslatorPage> {
     return Uri.https(
         api, 'api/tts', {'lang': lang, 'engine': engine, 'text': text});
     // return '$apiLink/tts?lang=$lang&text=$text&engine=$engine';
+  }
+
+  void _swapLanguages() {
+    if (swaping) return;
+    setState(() {
+      swaping = true;
+    });
+
+    String temp = inputTextController.text;
+    inputTextController.text = outputTextController.text;
+    outputTextController.text = temp;
+
+    temp = from;
+    from = to;
+    to = temp;
+
+    setState(() {
+      _translateText(inputTextController.text);
+      swaping = false;
+    });
   }
 
   @override
@@ -123,33 +256,75 @@ class _TranslatorPageState extends State<TranslatorPage> {
                 children: <Widget>[
                   TextButton(
                     child: Text(from),
-                    onPressed: () {},
+                    onPressed: () {
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        isDismissible: true,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.vertical(top: Radius.circular(25)),
+                        ),
+                        builder: (context) => DraggableScrollableSheet(
+                          initialChildSize: 0.85,
+                          // minChildSize: 0.6,
+                          // maxChildSize: 0.9,
+                          expand: false,
+                          builder: (context, scroll) => SeachListView(
+                            options: languages,
+                            func: (String value) {
+                              setState(() {
+                                if (value == to) {
+                                  _swapLanguages();
+                                  return;
+                                }
+                                from = value;
+                              });
+                              _translateText(inputTextController.text);
+                              Navigator.pop(context);
+                            },
+                          ),
+                        ),
+                      );
+                    },
                   ),
                   IconButton(
-                    onPressed: () {
-                      if (swaping) return;
-                      setState(() {
-                        swaping = true;
-                      });
-
-                      String temp = inputTextController.text;
-                      inputTextController.text = outputTextController.text;
-                      outputTextController.text = temp;
-
-                      temp = from;
-                      from = to;
-                      to = temp;
-
-                      setState(() {
-                        _translateText(inputTextController.text);
-                        swaping = false;
-                      });
-                    },
+                    onPressed: () => _swapLanguages(),
                     icon: const Icon(Icons.swap_horiz_rounded),
                   ),
                   TextButton(
                     child: Text(to),
-                    onPressed: () {},
+                    onPressed: () {
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        isDismissible: true,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.vertical(top: Radius.circular(15)),
+                        ),
+                        builder: (context) => DraggableScrollableSheet(
+                          initialChildSize: 0.85,
+                          // minChildSize: 0.6,
+                          // maxChildSize: 0.9,
+                          expand: false,
+                          builder: (context, scroll) => SeachListView(
+                            options: languages,
+                            func: (String value) {
+                              setState(() {
+                                if (value == from) {
+                                  _swapLanguages();
+                                  return;
+                                }
+                                to = value;
+                              });
+                              _translateText(inputTextController.text);
+                              Navigator.pop(context);
+                            },
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),
