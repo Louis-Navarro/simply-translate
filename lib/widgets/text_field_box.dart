@@ -129,7 +129,7 @@ class _TextFieldBoxState extends State<TextFieldBox> {
                   await audioPlayer.play();
                   audioPlayer.stop();
                 },
-                icon: const Icon(Ionicons.volume_high),
+                icon: const Icon(Ionicons.volume_high_outline),
               ),
             ],
           ),
